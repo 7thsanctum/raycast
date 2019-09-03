@@ -318,6 +318,8 @@ void raycast(
   }
 }
 
+float bob_amount = 0;
+float max_bob = 1.2f;
 static void doMove(float moveSpeed, float rotSpeed) {
   const uint8_t *keys = SDL_GetKeyState(nullptr);
 
@@ -334,7 +336,12 @@ static void doMove(float moveSpeed, float rotSpeed) {
   if (keys[SDLK_UP] || keys[SDLK_w]) {
     player_acc.x = dir.x * moveSpeed;
     player_acc.y = dir.y * moveSpeed;
+    bob_amount+=0.08;
   }
+  else{
+    bob_amount = 0;
+  }
+
   // move backwards if no wall behind you
   if (keys[SDLK_DOWN] || keys[SDLK_s]) {
     player_acc.x = -dir.x * moveSpeed;
@@ -377,6 +384,10 @@ static void doMove(float moveSpeed, float rotSpeed) {
     player_pos.z += player_acc.z;
   }
 
+  // Apply the bob amount
+  eyeLevel -= (sin(bob_amount)+0.5) * 0.1;
+
+  // This keeps the camera from drifting away.
   eyeLevel += 0.1f * ((player_pos.z + 3.f) - eyeLevel);
 }
 
